@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import axios from 'axios';
+import Weather from "./components/Weather";
 
 class App extends React.Component {
   constructor(props) {
@@ -10,6 +11,7 @@ class App extends React.Component {
       cityData: [],
       error: false,
       errorMessage: "",
+      weatherData: [],
     };
   }
 
@@ -28,13 +30,40 @@ class App extends React.Component {
       console.log(url);
 
       let cityDataFromAxios = await axios.get(url);
-      console.log(cityDataFromAxios.data)
+      console.log(cityDataFromAxios.data);
+
+       let lat = cityDataFromAxios.data[0].lat;
+       let lon = cityDataFromAxios.data[0].lon;
+
+       this.handleGetWeather(lat, lon);
+
       this.setState({
         cityData: cityDataFromAxios.data[0],
         error: false,
       });
     } catch (error) {
-     
+      this.setState({
+        error: true,
+        errorMessage: error.message,
+      });
+    }
+  };
+
+  handleGetWeather = async (lat, lon) => {
+    try {
+      // TODO: build URL
+      let url = `${process.env.REACT_APP_SERVER}/weather?lat=${lat}&lon=${lon}&searchQuery=${this.state.city}`;
+
+      // TODO: Use axios to hit my server
+      let weatherDataFromAxios = await axios.get(url);
+
+      console.log("WEATHER: ", weatherDataFromAxios.data);
+      // TODO: Save that weather data to state
+      this.setState({
+        weatherData: weatherDataFromAxios.data,
+      });
+    } catch (error) {
+      console.log(error.message);
       this.setState({
         error: true,
         errorMessage: error.message,
@@ -58,7 +87,11 @@ class App extends React.Component {
         <p>{this.state.cityData.display_name}</p>
         <p>{this.state.cityData.lat}</p>
         <p>{this.state.cityData.lon}</p>
-        <img src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_GPS_API_KEY}&center={this.state.cityData.lat},{this.state.cityData.lon}&zoom=10`} alt="map"/>
+        <img
+          src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_GPS_API_KEY}&center={this.state.cityData.lat},{this.state.cityData.lon}&zoom=10`}
+          alt="map"
+        />
+        <Weather weatherData={this.state.weatherData} />
       </>
     );
   }
