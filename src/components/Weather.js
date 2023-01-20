@@ -4,7 +4,7 @@ class Weather extends React.Component {
   render() {
     return (
       <>
-        <h3>Daily Weather</h3>
+        <h2>Daily Weather</h2>
 
         {this.props.weatherData.map((day, idx) => {
           return (
