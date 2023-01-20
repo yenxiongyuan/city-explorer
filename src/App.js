@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import axios from 'axios';
 import Weather from "./components/Weather";
+import Movies from './components/Movies';
 
 class App extends React.Component {
   constructor(props) {
@@ -12,6 +13,9 @@ class App extends React.Component {
       error: false,
       errorMessage: "",
       weatherData: [],
+      moviesData: [],
+      movieError: false,
+      movieErrorMessage: "",
     };
   }
 
@@ -36,6 +40,7 @@ class App extends React.Component {
        let lon = cityDataFromAxios.data[0].lon;
 
        this.handleGetWeather(lat, lon);
+       this.handleGetMovies();
 
       this.setState({
         cityData: cityDataFromAxios.data[0],
@@ -71,7 +76,28 @@ class App extends React.Component {
     }
   };
 
+  handleGetMovies = async () => {
+
+    try {
+      let url = `${process.env.REACT_APP_SERVER}/movies?searchQuery=${this.state.city}`
+      console.log(url);
+      let movieFromAxios = await axios.get(url);
+      console.log(movieFromAxios);
+      this.setState({
+        moviesData: movieFromAxios.data,
+        movieError: false,
+        movieErrorMessage: '',
+      })
+    } catch (error) {
+      this.setState({
+        movieError: true,
+        movieErrorMessage: error.message
+      })
+    }
+  }
+
   render() {
+    console.log(this.state)
     return (
       <>
         <h1>City Explorer</h1>
@@ -88,10 +114,11 @@ class App extends React.Component {
         <p>{this.state.cityData.lat}</p>
         <p>{this.state.cityData.lon}</p>
         <img
-          src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_GPS_API_KEY}&center={this.state.cityData.lat},{this.state.cityData.lon}&zoom=10`}
+          src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_GPS_API_KEY}&center=${this.state.cityData.lat},${this.state.cityData.lon}&zoom=10`}
           alt="map"
         />
         <Weather weatherData={this.state.weatherData} />
+        {this.state.moviesData.map(movie => <Movies moviesData={movie} />)}
       </>
     );
   }
