@@ -31,10 +31,10 @@ class App extends React.Component {
     try {
       let url = `https://us1.locationiq.com/v1/search?key=${process.env.REACT_APP_GPS_API_KEY}&q=${this.state.city}&format=json&limit=2`;
 
-      console.log(url);
+      // console.log(url);
 
       let cityDataFromAxios = await axios.get(url);
-      console.log(cityDataFromAxios.data);
+      // console.log(cityDataFromAxios.data);
 
        let lat = cityDataFromAxios.data[0].lat;
        let lon = cityDataFromAxios.data[0].lon;
@@ -62,13 +62,13 @@ class App extends React.Component {
       // TODO: Use axios to hit my server
       let weatherDataFromAxios = await axios.get(url);
 
-      console.log("WEATHER: ", weatherDataFromAxios.data);
+      // console.log("WEATHER: ", weatherDataFromAxios.data);
       // TODO: Save that weather data to state
       this.setState({
         weatherData: weatherDataFromAxios.data,
       });
     } catch (error) {
-      console.log(error.message);
+      // console.log(error.message);
       this.setState({
         error: true,
         errorMessage: error.message,
@@ -80,9 +80,9 @@ class App extends React.Component {
 
     try {
       let url = `${process.env.REACT_APP_SERVER}/movies?searchQuery=${this.state.city}`
-      console.log(url);
+      // console.log(url);
       let movieFromAxios = await axios.get(url);
-      console.log(movieFromAxios);
+      // console.log(movieFromAxios);
       this.setState({
         moviesData: movieFromAxios.data,
         movieError: false,
@@ -97,7 +97,7 @@ class App extends React.Component {
   }
 
   render() {
-    console.log(this.state)
+    // console.log(this.state)
     return (
       <>
         <h1>City Explorer</h1>
@@ -118,7 +118,7 @@ class App extends React.Component {
           alt="map"
         />
         <Weather weatherData={this.state.weatherData} />
-        {this.state.moviesData.map(movie => <Movies moviesData={movie} />)}
+        {this.state.moviesData.map((movie,i) => <Movies key={i} moviesData={movie} />)}
       </>
     );
   }
